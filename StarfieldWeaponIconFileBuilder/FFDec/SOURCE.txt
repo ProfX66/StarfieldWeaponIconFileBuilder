@@ -1,0 +1,6 @@
+JPEXS Free Flash Decompiler (FFDec) is licensed under the GNU General Public License v3.
+
+The source code for FFDec is available at:
+https://github.com/jindrapetrik/jpexs-decompiler
+
+You may also request a copy of the source code from the original author.
