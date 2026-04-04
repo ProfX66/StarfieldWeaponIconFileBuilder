@@ -1,0 +1,51 @@
+Third-Party Notices for StarfieldWeaponIconFileBuilder
+======================================================
+
+This product includes the following third-party software:
+
+1. Avalonia UI Framework
+   - Packages included: Avalonia core, Desktop, Themes, Fonts, Diagnostics, Svg.Controls
+   - Version: 11.3.11 (core), 11.x.x subpackages
+   - License: MIT
+   - Source: https://github.com/AvaloniaUI/Avalonia
+
+2. CustomMessageBox.Avalonia
+   - Version: 11.0.0.2
+   - License: MIT
+   - Source: https://github.com/Nickelony/CustomMessageBox.Avalonia
+
+3. LoadingIndicators.Avalonia.New
+   - Version: 2.0.8
+   - License: MIT
+   - Source: https://github.com/Der-Floh/LoadingIndicators.Avalonia
+
+4. Svg.Skia
+   - Version: 3.7.0
+   - License: MIT
+   - Source: https://github.com/wieslawsoltes/Svg.Skia
+
+5. CsvHelper
+   - Version: 33.1.0
+   - License: MIT
+   - Source: https://joshclose.github.io/CsvHelper/
+
+6. Newtonsoft.Json
+   - Version: 13.0.4
+   - License: MIT
+   - Source: https://www.newtonsoft.com/json
+
+7. CommunityToolkit.Mvvm
+   - Version: 8.2.1
+   - License: MIT
+   - Source: https://github.com/CommunityToolkit/dotnet
+
+8. JPEXS Free Flash Decompiler (FFDec)
+   - Version: release binaries included
+   - License: GNU General Public License v3 (GPL v3)
+   - Copyright (C) JPEXS
+   - Source code: https://github.com/jindrapetrik/jpexs-decompiler
+   - Notes: FFDec binaries are included unmodified. A copy of the GPL v3 license is included in the `ffdec/` folder.
+
+======================================================
+All licenses for third-party software are included as noted above. 
+Users should refer to the original sources for full license texts.
