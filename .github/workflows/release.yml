@@ -36,12 +36,12 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        [xml]$csproj = Get-Content "src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj"
+        [xml]$csproj = Get-Content "StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj"
         $version = $csproj.Project.PropertyGroup.Version
         echo "version=$version" >> $env:GITHUB_OUTPUT
 
     - name: Publish
-      run: dotnet publish src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o publish
+      run: dotnet publish StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o publish
 
     - name: Create Package
       run: |
@@ -77,7 +77,7 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        [xml]$csproj = Get-Content "src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj"
+        [xml]$csproj = Get-Content "StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj"
         $version = $csproj.Project.PropertyGroup.Version
         echo "version=$version" >> $env:GITHUB_OUTPUT
 
