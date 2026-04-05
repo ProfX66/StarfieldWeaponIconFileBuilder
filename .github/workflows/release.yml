@@ -15,6 +15,8 @@ jobs:
   build-and-release:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    outputs:
+      version: ${{ steps.determine-version.outputs.version }}
     strategy:
       max-parallel: 1
       matrix:
@@ -60,14 +62,17 @@ jobs:
       run: |
         $publishDir = "publish/${{ matrix.rid }}"
         if (Test-Path $publishDir) { Remove-Item $publishDir -Recurse -Force }
+
         dotnet publish StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj `
-          -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o $publishDir
+          -c Release -r ${{ matrix.rid }} --self-contained true `
+          -p:PublishSingleFile=true -o $publishDir
 
     - name: Package Release
       shell: pwsh
       run: |
         $publishDir = "publish/${{ matrix.rid }}"
         $packageDir = "$publishDir/package"
+
         if (Test-Path $packageDir) { Remove-Item $packageDir -Recurse -Force }
         mkdir $packageDir
 
@@ -79,15 +84,16 @@ jobs:
             Copy-Item $_.FullName -Destination $packageDir
         }
 
-        cp -r StarfieldWeaponIconFileBuilder/FFDec $packageDir/FFDec
-        mkdir $packageDir/Assets
-        cp StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf $packageDir/Assets/
-        cp README.md $packageDir/
-        cp ThirdPartyNotices.txt $packageDir/
-        cp LICENSE $packageDir/
+        Copy-Item "StarfieldWeaponIconFileBuilder/FFDec" -Recurse -Destination "$packageDir/FFDec"
+        mkdir "$packageDir/Assets"
+        Copy-Item "StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf" "$packageDir/Assets/"
+        Copy-Item "README.md" $packageDir/
+        Copy-Item "ThirdPartyNotices.txt" $packageDir/
+        Copy-Item "LICENSE" $packageDir/
 
         $zipPath = "publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-${{ steps.determine-version.outputs.version }}.zip"
         if (Test-Path $zipPath) { Remove-Item $zipPath }
+
         Compress-Archive -Path "$packageDir/*" -DestinationPath $zipPath
 
     - name: Upload Artifact
@@ -101,30 +107,31 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: Copy Artifacts from build
-        run: |
-          mkdir artifacts
-          cp publish/StarfieldWeaponIconFileBuilder-win-x64-${{ needs.build-and-release.outputs.version }}.zip artifacts/
-          cp publish/StarfieldWeaponIconFileBuilder-linux-x64-${{ needs.build-and-release.outputs.version }}.zip artifacts/
-          cp publish/StarfieldWeaponIconFileBuilder-osx-x64-${{ needs.build-and-release.outputs.version }}.zip artifacts/
-          cp publish/StarfieldWeaponIconFileBuilder-osx-arm64-${{ needs.build-and-release.outputs.version }}.zip artifacts/
+    - name: Download All Artifacts
+      uses: actions/download-artifact@v8
+      with:
+        path: artifacts
 
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2.6.1
-        with:
-          name: Starfield Weapon Icon File Builder ${{ needs.build-and-release.outputs.version }}
-          body: |
-            Starfield Weapon Icon File Builder ${{ needs.build-and-release.outputs.version }}
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2.6.1
+      with:
+        name: Starfield Weapon Icon File Builder ${{ needs.build-and-release.outputs.version }}
+        tag_name: ${{ needs.build-and-release.outputs.version }}
+        body: |
+          Starfield Weapon Icon File Builder ${{ needs.build-and-release.outputs.version }}
 
-            Downloads:
-            - [Windows x64](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-win-x64-${{ needs.build-and-release.outputs.version }}.zip)
-            - [Linux x64](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-linux-x64-${{ needs.build-and-release.outputs.version }}.zip)
-            - [macOS Intel](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-x64-${{ needs.build-and-release.outputs.version }}.zip)
-            - [macOS Apple Silicon](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-arm64-${{ needs.build-and-release.outputs.version }}.zip)
-          files: |
-            artifacts/StarfieldWeaponIconFileBuilder-win-x64-${{ needs.build-and-release.outputs.version }}.zip
-            artifacts/StarfieldWeaponIconFileBuilder-linux-x64-${{ needs.build-and-release.outputs.version }}.zip
-            artifacts/StarfieldWeaponIconFileBuilder-osx-x64-${{ needs.build-and-release.outputs.version }}.zip
-            artifacts/StarfieldWeaponIconFileBuilder-osx-arm64-${{ needs.build-and-release.outputs.version }}.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          Requirements:
+          - Java 8 or newer
+
+          Downloads:
+          - [Windows x64](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-win-x64-${{ needs.build-and-release.outputs.version }}.zip)
+          - [Linux x64](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-linux-x64-${{ needs.build-and-release.outputs.version }}.zip)
+          - [macOS Intel](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-x64-${{ needs.build-and-release.outputs.version }}.zip)
+          - [macOS Apple Silicon](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-arm64-${{ needs.build-and-release.outputs.version }}.zip)
+        files: |
+          artifacts/release-win-x64/*.zip
+          artifacts/release-linux-x64/*.zip
+          artifacts/release-osx-x64/*.zip
+          artifacts/release-osx-arm64/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
