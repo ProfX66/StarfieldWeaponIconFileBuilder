@@ -44,8 +44,9 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        if (${{ github.event.inputs.version }}) {
-            $ver = "${{ github.event.inputs.version }}"
+        $inputVersion = '${{ github.event.inputs.version }}'
+        if ($inputVersion -and $inputVersion -ne '') {
+            $ver = $inputVersion
         } elseif ($env:GITHUB_REF -like 'refs/tags/*') {
             $ver = $env:GITHUB_REF -replace '^refs/tags/', ''
         } else {
