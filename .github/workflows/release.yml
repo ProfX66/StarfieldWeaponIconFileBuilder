@@ -66,16 +66,22 @@ jobs:
     - name: Package Release
       shell: pwsh
       run: |
-        $packageDir = "publish/${{ matrix.rid }}/package"
+        $publishDir = "publish/${{ matrix.rid }}"
+        $packageDir = "$publishDir/package"
         if (Test-Path $packageDir) { Remove-Item $packageDir -Recurse -Force }
         mkdir $packageDir
-        cp -r publish/${{ matrix.rid }}/* $packageDir/
+
+        Get-ChildItem $publishDir -Exclude 'package' | ForEach-Object {
+            Copy-Item $_.FullName -Recurse -Destination $packageDir
+        }
+
         cp -r StarfieldWeaponIconFileBuilder/FFDec $packageDir/FFDec
         mkdir $packageDir/Assets
         cp StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf $packageDir/Assets/
         cp README.md $packageDir/
         cp ThirdPartyNotices.txt $packageDir/
         cp LICENSE $packageDir/
+
         $zipPath = "publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip"
         if (Test-Path $zipPath) { Remove-Item $zipPath }
         Compress-Archive -Path "$packageDir/*" -DestinationPath $zipPath
@@ -97,8 +103,9 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        if (${{ github.event.inputs.version }}) {
-            $ver = "${{ github.event.inputs.version }}"
+        $inputVersion = '${{ github.event.inputs.version }}'
+        if ($inputVersion -and $inputVersion -ne '') {
+            $ver = $inputVersion
         } elseif ($env:GITHUB_REF -like 'refs/tags/*') {
             $ver = $env:GITHUB_REF -replace '^refs/tags/', ''
         } else {
@@ -112,7 +119,7 @@ jobs:
       with:
         path: artifacts
 
-    - name: Create GitHub Release with Direct Download URLs
+    - name: Create GitHub Release
       if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
       uses: softprops/action-gh-release@v2
       with:
