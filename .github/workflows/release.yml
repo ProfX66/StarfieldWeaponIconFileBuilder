@@ -112,38 +112,13 @@ jobs:
       with:
         path: artifacts
 
-    - name: Get Previous Tag
-      id: prevtag
-      shell: pwsh
-      run: |
-        git fetch --tags
-
-        $currentTag = "${{ needs.build-and-release.outputs.version }}"
-        $tags = git tag --sort=-creatordate
-
-        $previousTag = ""
-        foreach ($tag in $tags) {
-            if ($tag -ne $currentTag) {
-                $previousTag = $tag
-                break
-            }
-        }
-
-        if ($previousTag -eq "") {
-            $previousTag = $currentTag
-        }
-        echo "previous=$previousTag" >> $env:GITHUB_OUTPUT
-        Write-Host "Previous tag: $previousTag"
-
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2.6.1
       with:
         name: Starfield Weapon Icon File Builder ${{ needs.build-and-release.outputs.version }}
         tag_name: ${{ needs.build-and-release.outputs.version }}
+        generate_release_notes: true
         body: |
-          **Full Changelog**:
-          - https://github.com/${{ github.repository }}/compare/${{ steps.prevtag.outputs.previous }}...${{ needs.build-and-release.outputs.version }}
-
           **Requirements**:
           - Java 8 or newer
           - FFDec v25.1.3 nightly build 3471 or newer (this is included in the below artifacts)
@@ -154,6 +129,7 @@ jobs:
           - [Linux x64](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-linux-x64-${{ needs.build-and-release.outputs.version }}.zip)
           - [macOS Intel](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-x64-${{ needs.build-and-release.outputs.version }}.zip)
           - [macOS Apple Silicon](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-arm64-${{ needs.build-and-release.outputs.version }}.zip)
+          
         files: |
           artifacts/release-win-x64/*.zip
           artifacts/release-linux-x64/*.zip
