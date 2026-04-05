@@ -169,7 +169,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (WeaponLinkageName.IsNullOrEmptyOrWhiteSpace()) return false;
         if (ExportPath.IsNullOrEmptyOrWhiteSpace()) return false;
-        string tempLinkageName = !WeaponLinkageName.IsNullOrEmpty() && WeaponLinkageName!.IsRegexMatch(@"^CCSUP") ? $"{WeaponLinkageName}.swf" : $"CCSUP_{WeaponLinkageName}.swf";
+        string trimmedLinkageName = !WeaponLinkageName.IsNullOrEmpty() ? WeaponLinkageName.Trim() : WeaponLinkageName;
+        string tempLinkageName = !trimmedLinkageName.IsNullOrEmpty() && trimmedLinkageName!.IsRegexMatch(@"^CCSUP") ? $"{trimmedLinkageName}.swf" : $"CCSUP_{trimmedLinkageName}.swf";
         CreateButtonText = $"Build: {tempLinkageName.Replace("_", "__")}";
         FinalFilePath = ExportPath!.AppendPath(tempLinkageName);
         return HasSvg;
@@ -183,7 +184,8 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (CloneWeaponLinkageName.IsNullOrEmptyOrWhiteSpace()) return false;
         if (CloneExportPath.IsNullOrEmptyOrWhiteSpace()) return false;
-        string tempLinkageName = !CloneWeaponLinkageName.IsNullOrEmpty() && CloneWeaponLinkageName!.IsRegexMatch(@"^CCSUP") ? $"{CloneWeaponLinkageName}.swf" : $"CCSUP_{CloneWeaponLinkageName}.swf";
+        string trimmedLinkageName = !CloneWeaponLinkageName.IsNullOrEmpty() ? CloneWeaponLinkageName.Trim() : CloneWeaponLinkageName;
+        string tempLinkageName = !trimmedLinkageName.IsNullOrEmpty() && trimmedLinkageName!.IsRegexMatch(@"^CCSUP") ? $"{trimmedLinkageName}.swf" : $"CCSUP_{trimmedLinkageName}.swf";
         CloneCreateButtonText = $"Copy to: {tempLinkageName.Replace("_", "__")}";
         CloneFinalFilePath = CloneExportPath!.AppendPath(tempLinkageName);
         return true;
@@ -313,7 +315,7 @@ public partial class MainWindowViewModel : ViewModelBase
     /// </summary>
     private async void ResetSettings()
     {
-        MessageBoxResult msgResult = await Message.Show("This will reset all settings back to defaults. \n \nYou will lose any changes, continue?", "Are you sure?", MessageBoxIcon.Question, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2);
+        MessageBoxResult msgResult = await Message.Show("This will reset all settings back to defaults.\n\nYou will lose any changes, continue?", "Are you sure?", MessageBoxIcon.Question, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2);
         if (msgResult != MessageBoxResult.Yes) return;
 
         AppSettings!.ResetToDefaults();
@@ -375,6 +377,23 @@ public partial class MainWindowViewModel : ViewModelBase
         Logging.Informational($"Setting LoadingMessage to: {message}");
         LoadingMessage = message;
         OnPropertyChanged(nameof(LoadingMessage));
+    }
+
+    /// <summary>
+    /// Sanitizes currently set weapon linkage names to remove illegal spaces
+    /// </summary>
+    public void SanitizeLinkageName()
+    {
+        if (!WeaponLinkageName.IsNullOrEmptyOrWhiteSpace() && WeaponLinkageName.IsRegexMatch(@"\s+"))
+        {
+            WeaponLinkageName = WeaponLinkageName.RegexReplace(@"\s+", "");
+            OnPropertyChanged(nameof(WeaponLinkageName));
+        }
+        if (!CloneWeaponLinkageName.IsNullOrEmptyOrWhiteSpace() && CloneWeaponLinkageName.IsRegexMatch(@"\s+"))
+        {
+            CloneWeaponLinkageName = CloneWeaponLinkageName.RegexReplace(@"\s+", "");
+            OnPropertyChanged(nameof(CloneWeaponLinkageName));
+        }
     }
 
     #endregion

@@ -12,6 +12,7 @@ using StarfieldWeaponIconFileBuilder.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Message = StarfieldWeaponIconFileBuilder.Utilities.Message;
 
@@ -261,9 +262,17 @@ namespace StarfieldWeaponIconFileBuilder.Views
         /// <param name="e"></param>
         private async void CreateButton_Click(object? sender, RoutedEventArgs e)
         {
+            string linkageName = VM!.WeaponLinkageName!.Trim();
+            if (linkageName.IsRegexMatch(@"\s+"))
+            {
+                MessageBoxResult msgResult = await Message.Show($"Your provided Weapon Linkage Name [ {linkageName} ] contains spaces.\n\nThis will cause the file creation to fail.\n\nWould you like to strip all spaces and continue?", "Detected Spaces!", MessageBoxIcon.Warning, MessageBoxButtons.YesNo);
+                if (msgResult != MessageBoxResult.Yes) return;
+                VM!.SanitizeLinkageName();
+                linkageName = VM!.WeaponLinkageName!.Trim();
+            }
+
             ToggleLoadingOverlay(true, "FinalFilePath");
             bool? result = null;
-            string linkageName = VM!.WeaponLinkageName!;
             string exportPath = VM.ExportPath!;
             string svgPath = VM.SvgPath!;
             bool autosize = VM.AppSettings!.AutoResizeIcon;
@@ -297,9 +306,17 @@ namespace StarfieldWeaponIconFileBuilder.Views
         /// <param name="e"></param>
         private async void CloneCreateButton_Click(object? sender, RoutedEventArgs e)
         {
+            string linkageName = VM!.CloneWeaponLinkageName!;
+            if (linkageName.IsRegexMatch(@"\s+"))
+            {
+                MessageBoxResult msgResult = await Message.Show($"Your provided Weapon Linkage Name [ {linkageName} ] contains spaces.\n\nThis will cause the file cloning to fail.\n\nWould you like to strip all spaces and continue?", "Detected Spaces!", MessageBoxIcon.Warning, MessageBoxButtons.YesNo);
+                if (msgResult != MessageBoxResult.Yes) return;
+                VM!.SanitizeLinkageName();
+                linkageName = VM!.CloneWeaponLinkageName!.Trim();
+            }
+
             ToggleLoadingOverlay(true, "CloneFinalFilePath");
             bool? result = null;
-            string linkageName = VM!.CloneWeaponLinkageName!;
             string sourcePath = VM.CloneSourcePath!;
             string exportPath = VM.CloneExportPath!;
 
@@ -341,6 +358,12 @@ namespace StarfieldWeaponIconFileBuilder.Views
             {
                 System.Threading.Thread.Sleep(2000);
             });
+
+            if (Environment.IsPrivilegedProcess && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                MessageBoxResult msgResult = await Message.Show("This application was launched as elevated administrator. Drag and dropping for your icon likely will not function. You will need to use the browse button instead.\n\nWould you like to continue?", "Running as Administrator", MessageBoxIcon.Warning, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2);
+                if (msgResult != MessageBoxResult.Yes) CloseApp();
+            }
 
             if (VM!.AppSettings!.JavaPath.IsNullOrEmptyOrWhiteSpace() || !VM!.AppSettings!.JavaPath!.PathExists().Exist)
             {
@@ -437,6 +460,24 @@ namespace StarfieldWeaponIconFileBuilder.Views
                 return fullPath.RegexReplace(AppConfig.LocalPath.RegexEscape(), "%AppPath%");
             }
             return fullPath;
+        }
+
+        /// <summary>
+        /// Closes the current app from any thread
+        /// </summary>
+        public static void CloseApp()
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    desktop.MainWindow?.Close();
+                }
+                else
+                {
+                    Environment.Exit(0);
+                }
+            });
         }
 
         #endregion
