@@ -41,7 +41,7 @@ jobs:
         dotnet-version: 9.0.x
 
     - name: Determine version
-      id: version
+      id: determine-version
       shell: pwsh
       run: |
         $inputVersion = '${{ github.event.inputs.version }}'
@@ -71,8 +71,12 @@ jobs:
         if (Test-Path $packageDir) { Remove-Item $packageDir -Recurse -Force }
         mkdir $packageDir
 
-        Get-ChildItem $publishDir -Exclude 'package' | ForEach-Object {
+        Get-ChildItem $publishDir -Directory | Where-Object { $_.Name -ne 'package' } | ForEach-Object {
             Copy-Item $_.FullName -Recurse -Destination $packageDir
+        }
+
+        Get-ChildItem $publishDir -File | ForEach-Object {
+            Copy-Item $_.FullName -Destination $packageDir
         }
 
         cp -r StarfieldWeaponIconFileBuilder/FFDec $packageDir/FFDec
@@ -82,7 +86,7 @@ jobs:
         cp ThirdPartyNotices.txt $packageDir/
         cp LICENSE $packageDir/
 
-        $zipPath = "publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip"
+        $zipPath = "publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.determine-version.outputs.version }}.zip"
         if (Test-Path $zipPath) { Remove-Item $zipPath }
         Compress-Archive -Path "$packageDir/*" -DestinationPath $zipPath
 
@@ -90,7 +94,7 @@ jobs:
       uses: actions/upload-artifact@v6
       with:
         name: release-${{ matrix.rid }}
-        path: publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip
+        path: publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.determine-version.outputs.version }}.zip
 
   release:
     needs: build-and-release
@@ -100,7 +104,7 @@ jobs:
     - uses: actions/checkout@v5
 
     - name: Determine version
-      id: version
+      id: determine-version
       shell: pwsh
       run: |
         $inputVersion = '${{ github.event.inputs.version }}'
@@ -123,22 +127,22 @@ jobs:
       if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
       uses: softprops/action-gh-release@v2.6.1
       with:
-        name: Starfield Weapon Icon File Builder ${{ steps.version.outputs.version }}
+        name: Starfield Weapon Icon File Builder v${{ steps.determine-version.outputs.version }}
         body: |
-          Starfield Weapon Icon File Builder ${{ steps.version.outputs.version }}
+          Starfield Weapon Icon File Builder v${{ steps.determine-version.outputs.version }}
 
           Requirements:
           - Java 8 or newer
 
           Downloads:
-          - [Windows x64](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/StarfieldWeaponIconFileBuilder-win-x64-${{ steps.version.outputs.version }}.zip)
-          - [Linux x64](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/StarfieldWeaponIconFileBuilder-linux-x64-${{ steps.version.outputs.version }}.zip)
-          - [macOS Intel](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-x64-${{ steps.version.outputs.version }}.zip)
-          - [macOS Apple Silicon](https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-arm64-${{ steps.version.outputs.version }}.zip)
+          - [Windows x64](https://github.com/${{ github.repository }}/releases/download/v${{ steps.determine-version.outputs.version }}/StarfieldWeaponIconFileBuilder-win-x64-v${{ steps.determine-version.outputs.version }}.zip)
+          - [Linux x64](https://github.com/${{ github.repository }}/releases/download/v${{ steps.determine-version.outputs.version }}/StarfieldWeaponIconFileBuilder-linux-x64-v${{ steps.determine-version.outputs.version }}.zip)
+          - [macOS Intel](https://github.com/${{ github.repository }}/releases/download/v${{ steps.determine-version.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-x64-v${{ steps.determine-version.outputs.version }}.zip)
+          - [macOS Apple Silicon](https://github.com/${{ github.repository }}/releases/download/v${{ steps.determine-version.outputs.version }}/StarfieldWeaponIconFileBuilder-osx-arm64-v${{ steps.determine-version.outputs.version }}.zip)
         files: |
-          artifacts/StarfieldWeaponIconFileBuilder-win-x64-${{ steps.version.outputs.version }}.zip
-          artifacts/StarfieldWeaponIconFileBuilder-linux-x64-${{ steps.version.outputs.version }}.zip
-          artifacts/StarfieldWeaponIconFileBuilder-osx-x64-${{ steps.version.outputs.version }}.zip
-          artifacts/StarfieldWeaponIconFileBuilder-osx-arm64-${{ steps.version.outputs.version }}.zip
+          artifacts/StarfieldWeaponIconFileBuilder-win-x64-v${{ steps.determine-version.outputs.version }}.zip
+          artifacts/StarfieldWeaponIconFileBuilder-linux-x64-v${{ steps.determine-version.outputs.version }}.zip
+          artifacts/StarfieldWeaponIconFileBuilder-osx-x64-v${{ steps.determine-version.outputs.version }}.zip
+          artifacts/StarfieldWeaponIconFileBuilder-osx-arm64-v${{ steps.determine-version.outputs.version }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
