@@ -34,10 +34,11 @@ jobs:
 
     - name: Get Version
       id: version
-      shell: bash
+      shell: pwsh
       run: |
-        VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj)
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        [xml]$csproj = Get-Content "src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj"
+        $version = $csproj.Project.PropertyGroup.Version
+        echo "version=$version" >> $env:GITHUB_OUTPUT
 
     - name: Publish
       run: dotnet publish src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o publish
