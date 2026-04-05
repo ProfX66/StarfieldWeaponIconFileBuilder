@@ -75,7 +75,7 @@ jobs:
 
     - name: Get Version
       id: version
-      shell: powershell
+      shell: pwsh
       run: |
         [xml]$csproj = Get-Content "src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj"
         $version = $csproj.Project.PropertyGroup.Version
