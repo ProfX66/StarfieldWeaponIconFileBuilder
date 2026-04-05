@@ -1,0 +1,100 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: macos-latest
+            rid: osx-x64
+          - os: macos-latest
+            rid: osx-arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Get Version
+      id: version
+      shell: bash
+      run: |
+        VERSION=$(grep -oPm1 "(?<=<Version>)[^<]+" src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj)
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Publish
+      run: dotnet publish src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o publish
+
+    - name: Create Package
+      run: |
+        mkdir package
+        cp -r publish/* package/
+        cp -r StarfieldWeaponIconFileBuilder/FFDec package/FFDec
+        mkdir -p package/Assets
+        cp StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf package/Assets/
+        cp README.md package/
+        cp ThirdPartyNotices.txt package/
+        cp LICENSE package/
+
+    - name: Zip
+      run: |
+        cd package
+        zip -r ../StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip .
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-${{ matrix.rid }}
+        path: StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip
+
+
+  release:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Get Version
+      id: version
+      shell: powershell
+      run: |
+        [xml]$csproj = Get-Content "src/StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj"
+        $version = $csproj.Project.PropertyGroup.Version
+        echo "version=$version" >> $env:GITHUB_OUTPUT
+
+    - name: Download Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: Starfield Weapon Icon File Builder v${{ steps.version.outputs.version }}
+        body: |
+          Starfield Weapon Icon File Builder v${{ steps.version.outputs.version }}
+
+          Requirements:
+          - Java 8 or newer
+
+          Downloads:
+          - Windows: win-x64
+          - Linux: linux-x64
+          - macOS Intel: osx-x64
+          - macOS Apple Silicon: osx-arm64
+
+        files: artifacts/**/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
