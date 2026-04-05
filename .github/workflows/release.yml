@@ -118,10 +118,13 @@ jobs:
         name: Starfield Weapon Icon File Builder ${{ needs.build-and-release.outputs.version }}
         tag_name: ${{ needs.build-and-release.outputs.version }}
         body: |
-          Starfield Weapon Icon File Builder ${{ needs.build-and-release.outputs.version }}
+          Full Changelog:
+          - [${{ github.event.before }}...${{ github.ref_name }}](https://github.com{{ github.repository }}/compare/${{ github.event.before }}...${{ github.ref_name }})
 
           Requirements:
           - Java 8 or newer
+          - FFDec v25.1.3 nightly build 3471 or newer (this is included in the below artifacts)
+          - .NET 9.0 (this is embedded in the application)
 
           Downloads:
           - [Windows x64](https://github.com/${{ github.repository }}/releases/download/${{ needs.build-and-release.outputs.version }}/StarfieldWeaponIconFileBuilder-win-x64-${{ needs.build-and-release.outputs.version }}.zip)
