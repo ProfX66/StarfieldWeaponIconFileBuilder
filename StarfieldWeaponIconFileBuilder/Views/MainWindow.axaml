@@ -486,6 +486,21 @@
                         <Button Grid.Column="1" Content="Reset to defaults" Command="{Binding ResetSettingsCommand}" FontSize="20" Padding="10" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="DarkRed" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
                     </Grid>
 
+                    <StackPanel Grid.Row="3" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,10,0,0">
+						<TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Normal" FontSize="10">
+                            <Run Text="Written By: "/>
+                            <InlineUIContainer BaselineAlignment="TextBottom">
+                                <HyperlinkButton Content="ProfX1527" NavigateUri="https://pxcnet.xyz" Margin="0,0,0,-1" Padding="0" FontSize="{Binding $parent[TextBlock].FontSize}"/>
+                            </InlineUIContainer>
+                        </TextBlock>
+                        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Right" FontWeight="Normal" FontSize="10">
+                            <Run Text="Source: "/>
+                            <InlineUIContainer BaselineAlignment="TextBottom">
+                                <HyperlinkButton Content="GitHub" NavigateUri="https://github.com/ProfX66/StarfieldWeaponIconFileBuilder" Margin="0,0,0,-1" Padding="0" FontSize="{Binding $parent[TextBlock].FontSize}"/>
+                            </InlineUIContainer>
+                        </TextBlock>
+                    </StackPanel>
+
                 </Grid>
 
             </TabItem>

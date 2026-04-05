@@ -8,8 +8,11 @@
     </Application.DataTemplates>
 
     <Application.Resources>
-        <SolidColorBrush Color="Black" x:Key="AccentButtonForeground" />
-    </Application.Resources>
+        <SolidColorBrush x:Key="AccentButtonForeground" Color="Black" />
+        <SolidColorBrush x:Key="HyperlinkButtonForegroundVisited" Color="#D7A64B"/>
+        <SolidColorBrush x:Key="HyperlinkButtonForegroundVisitedPointerOver" Color="#D7A64B" />
+        <SolidColorBrush x:Key="HyperlinkButtonForegroundVisitedPressed" Color="#D7A64B" Opacity="0.9" />
+     </Application.Resources>
 
     <Application.Styles>
 
