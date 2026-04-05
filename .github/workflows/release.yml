@@ -129,6 +129,9 @@ jobs:
             }
         }
 
+        if ($previousTag -eq "") {
+            $previousTag = $currentTag
+        }
         echo "previous=$previousTag" >> $env:GITHUB_OUTPUT
         Write-Host "Previous tag: $previousTag"
 
