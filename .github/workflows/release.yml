@@ -45,7 +45,7 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        if (${{ github.event.inputs.version }}) {
+        if ("${{ github.event.inputs.version }}" -ne '') {
             $ver = "${{ github.event.inputs.version }}"
         } elseif ($env:GITHUB_REF -like 'refs/tags/*') {
             $ver = $env:GITHUB_REF -replace '^refs/tags/', ''
@@ -63,31 +63,26 @@ jobs:
         dotnet publish StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj `
           -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o $publishDir
 
-    - name: Create Package
-      shell: pwsh
-      run: |
-        $packageDir = "publish/${{ matrix.rid }}/package"
-        mkdir $packageDir
-        cp -r publish/${{ matrix.rid }}/* $packageDir/
-        cp -r StarfieldWeaponIconFileBuilder/FFDec $packageDir/FFDec
-        mkdir $packageDir/Assets
-        cp StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf $packageDir/Assets/
-        cp README.md $packageDir/
-        cp ThirdPartyNotices.txt $packageDir/
-        cp LICENSE $packageDir/
+        # Copy additional files directly into the publish folder
+        cp -r StarfieldWeaponIconFileBuilder/FFDec $publishDir/FFDec
+        mkdir $publishDir/Assets
+        cp StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf $publishDir/Assets/
+        cp README.md $publishDir/
+        cp ThirdPartyNotices.txt $publishDir/
+        cp LICENSE $publishDir/
 
-    - name: Zip Package
+    - name: Zip Publish Folder
       shell: pwsh
       run: |
-        $zipPath = "publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip"
+        $zipPath = "publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-${{ steps.version.outputs.version }}.zip"
         if (Test-Path $zipPath) { Remove-Item $zipPath }
-        Compress-Archive -Path publish/${{ matrix.rid }}/package/* -DestinationPath $zipPath
+        Compress-Archive -Path publish/${{ matrix.rid }}/* -DestinationPath $zipPath
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v6
       with:
         name: release-${{ matrix.rid }}
-        path: publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip
+        path: publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-${{ steps.version.outputs.version }}.zip
 
   release:
     needs: build-and-release
@@ -99,7 +94,7 @@ jobs:
       id: version
       shell: pwsh
       run: |
-        if (${{ github.event.inputs.version }}) {
+        if ("${{ github.event.inputs.version }}" -ne '') {
             $ver = "${{ github.event.inputs.version }}"
         } elseif ($env:GITHUB_REF -like 'refs/tags/*') {
             $ver = $env:GITHUB_REF -replace '^refs/tags/', ''
