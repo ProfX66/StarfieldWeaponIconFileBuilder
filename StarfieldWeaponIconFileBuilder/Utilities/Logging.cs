@@ -125,6 +125,7 @@ public static class Logging
         await DebugAsync($"Debug? {LogConfig.Debug}");
         await WhatIfAsync($"WhatIf? {LogConfig.WhatIf}");
         await NoneAsync();
+        await InformationalAsync($"AppPath: {"%AppPath%".ExpandVariables()}");
         await InformationalAsync($"LogFilePath: {LogFilePath}");
         await NoneAsync();
 
