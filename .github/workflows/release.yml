@@ -5,9 +5,14 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Override version manually (optional)'
+        required: false
+        default: ''
 
 jobs:
-  build:
+  build-and-release:
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
@@ -26,86 +31,96 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v5
+    - name: Checkout repository
+      uses: actions/checkout@v5
       with:
         fetch-depth: 0
 
-    - uses: actions/setup-dotnet@v5
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 9.0.x
 
-    - name: Get Version
+    - name: Determine version
       id: version
       shell: pwsh
       run: |
-        if ($env:GITHUB_REF -like 'refs/tags/*') {
+        if (${{ github.event.inputs.version }}) {
+            $ver = "${{ github.event.inputs.version }}"
+        } elseif ($env:GITHUB_REF -like 'refs/tags/*') {
             $ver = $env:GITHUB_REF -replace '^refs/tags/', ''
         } else {
             $ver = '0.0.0-test'
         }
         echo "version=$ver" >> $env:GITHUB_OUTPUT
+        Write-Host "Building version $ver"
 
     - name: Publish
       shell: pwsh
       run: |
+        $publishDir = "publish/${{ matrix.rid }}"
+        if (Test-Path $publishDir) { Remove-Item $publishDir -Recurse -Force }
         dotnet publish StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj `
-          -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o publish
+          -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o $publishDir
 
     - name: Create Package
       shell: pwsh
       run: |
-        mkdir package
-        cp -r publish/* package/
-        cp -r StarfieldWeaponIconFileBuilder/FFDec package/FFDec
-        mkdir package/Assets
-        cp StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf package/Assets/
-        cp README.md package/
-        cp ThirdPartyNotices.txt package/
-        cp LICENSE package/
+        $packageDir = "publish/${{ matrix.rid }}/package"
+        mkdir $packageDir
+        cp -r publish/${{ matrix.rid }}/* $packageDir/
+        cp -r StarfieldWeaponIconFileBuilder/FFDec $packageDir/FFDec
+        mkdir $packageDir/Assets
+        cp StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf $packageDir/Assets/
+        cp README.md $packageDir/
+        cp ThirdPartyNotices.txt $packageDir/
+        cp LICENSE $packageDir/
 
     - name: Zip Package
       shell: pwsh
       run: |
-        $zipPath = "../StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-${{ steps.version.outputs.version }}.zip"
+        $zipPath = "publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip"
         if (Test-Path $zipPath) { Remove-Item $zipPath }
-        Compress-Archive -Path package/* -DestinationPath $zipPath
+        Compress-Archive -Path publish/${{ matrix.rid }}/package/* -DestinationPath $zipPath
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v6
       with:
         name: release-${{ matrix.rid }}
-        path: StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-${{ steps.version.outputs.version }}.zip
+        path: publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip
 
   release:
-    needs: build
+    needs: build-and-release
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v5
 
-    - name: Get Version
+    - name: Determine version
       id: version
       shell: pwsh
       run: |
-        if ($env:GITHUB_REF -like 'refs/tags/*') {
+        if (${{ github.event.inputs.version }}) {
+            $ver = "${{ github.event.inputs.version }}"
+        } elseif ($env:GITHUB_REF -like 'refs/tags/*') {
             $ver = $env:GITHUB_REF -replace '^refs/tags/', ''
         } else {
             $ver = '0.0.0-test'
         }
         echo "version=$ver" >> $env:GITHUB_OUTPUT
+        Write-Host "Using version $ver"
 
-    - name: Download Artifacts
+    - name: Download All Artifacts
       uses: actions/download-artifact@v8
       with:
         path: artifacts
 
     - name: Create GitHub Release
-      if: startsWith(github.ref, 'refs/tags/')
+      if: startsWith(github.ref, 'refs/tags/') || ${{ github.event_name == 'workflow_dispatch' }}
       uses: softprops/action-gh-release@v2
       with:
-        name: Starfield Weapon Icon File Builder ${{ steps.version.outputs.version }}
+        name: Starfield Weapon Icon File Builder v${{ steps.version.outputs.version }}
         body: |
-          Starfield Weapon Icon File Builder ${{ steps.version.outputs.version }}
+          Starfield Weapon Icon File Builder v${{ steps.version.outputs.version }}
 
           Requirements:
           - Java 8 or newer
