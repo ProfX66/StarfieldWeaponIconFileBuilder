@@ -55,9 +55,11 @@ jobs:
         cp LICENSE package/
 
     - name: Zip
+      shell: pwsh
       run: |
-        cd package
-        zip -r ../StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip .
+        $zipPath = "../StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-v${{ steps.version.outputs.version }}.zip"
+        if (Test-Path $zipPath) { Remove-Item $zipPath }
+        Compress-Archive -Path package/* -DestinationPath $zipPath
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
