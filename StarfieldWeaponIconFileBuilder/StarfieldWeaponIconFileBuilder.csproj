@@ -1,14 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <AssemblyName>Starfield Weapon Icon File Builder</AssemblyName>
+    <Product>Starfield Weapon Icon File Builder</Product>
+    <Company>PXC</Company>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <Version>0.0.1</Version>
+    <FileVersion>0.0.1.0</FileVersion>
+
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <AssemblyVersion>0.0.1.0</AssemblyVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationIcon>Assets\StarfieldWeaponIconFileBuilder.ico</ApplicationIcon>
     <PackAsTool>False</PackAsTool>
+    <RuntimeIdentifier Condition="'$(Configuration)' == 'Debug'">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win-x64;linux-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <PublishTrimmed>false</PublishTrimmed>
+    <DebugType>none</DebugType>
+    <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
 
   <ItemGroup>
