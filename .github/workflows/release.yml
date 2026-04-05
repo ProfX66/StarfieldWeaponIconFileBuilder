@@ -8,6 +8,8 @@ on:
 
 jobs:
   build:
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     strategy:
       max-parallel: 1
       matrix:
@@ -44,8 +46,10 @@ jobs:
         echo "version=$ver" >> $env:GITHUB_OUTPUT
 
     - name: Publish
-      run: dotnet publish StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj `
-        -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o publish
+      shell: pwsh
+      run: |
+        dotnet publish StarfieldWeaponIconFileBuilder/StarfieldWeaponIconFileBuilder.csproj `
+          -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o publish
 
     - name: Create Package
       shell: pwsh
@@ -53,7 +57,7 @@ jobs:
         mkdir package
         cp -r publish/* package/
         cp -r StarfieldWeaponIconFileBuilder/FFDec package/FFDec
-        mkdir -p package/Assets
+        mkdir package/Assets
         cp StarfieldWeaponIconFileBuilder/Assets/CCSUP_CustomWeaponTemplate.swf package/Assets/
         cp README.md package/
         cp ThirdPartyNotices.txt package/
