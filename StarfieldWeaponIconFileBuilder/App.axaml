@@ -1,0 +1,27 @@
+<Application xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:msgbox="clr-namespace:CustomMessageBox.Avalonia;assembly=CustomMessageBox.Avalonia"
+             x:Class="StarfieldWeaponIconFileBuilder.App" xmlns:local="using:StarfieldWeaponIconFileBuilder"
+             RequestedThemeVariant="Dark">
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Resources>
+        <SolidColorBrush Color="Black" x:Key="AccentButtonForeground" />
+    </Application.Resources>
+
+    <Application.Styles>
+
+        <FluentTheme>
+            <FluentTheme.Palettes>
+                <ColorPaletteResources x:Key="Light" Accent="#FFD7A64B" />
+                <ColorPaletteResources x:Key="Dark" Accent="#FFD7A64B" />
+            </FluentTheme.Palettes>
+        </FluentTheme>
+
+        <StyleInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
+
+    </Application.Styles>
+
+</Application>

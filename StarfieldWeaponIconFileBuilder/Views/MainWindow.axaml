@@ -1,0 +1,532 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:StarfieldWeaponIconFileBuilder.ViewModels" xmlns:utils="clr-namespace:StarfieldWeaponIconFileBuilder.Utilities"
+        xmlns:starfieldweaponiconfilebuilder="using:StarfieldWeaponIconFileBuilder" xmlns:converters="using:StarfieldWeaponIconFileBuilder.Converters"
+        mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="650" Width="700" Height="650" MinWidth="700" MinHeight="650"
+        x:Class="StarfieldWeaponIconFileBuilder.Views.MainWindow" x:DataType="vm:MainWindowViewModel" Icon="/Assets/StarfieldWeaponIconFileBuilder.ico"
+        Title="{Binding WindowTitle}" WindowStartupLocation="CenterScreen" Background="{Binding ConstellationBlue}"
+        Closing="Window_Closing" Opened="Window_Opened">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.Resources>
+        <StreamGeometry x:Key="question_circle_regular">M24 4C35.0457 4 44 12.9543 44 24C44 35.0457 35.0457 44 24 44C12.9543 44 4 35.0457 4 24C4 12.9543 12.9543 4 24 4ZM24 6.5C14.335 6.5 6.5 14.335 6.5 24C6.5 33.665 14.335 41.5 24 41.5C33.665 41.5 41.5 33.665 41.5 24C41.5 14.335 33.665 6.5 24 6.5ZM24.25 32C25.0784 32 25.75 32.6716 25.75 33.5C25.75 34.3284 25.0784 35 24.25 35C23.4216 35 22.75 34.3284 22.75 33.5C22.75 32.6716 23.4216 32 24.25 32ZM24.25 13C27.6147 13 30.5 15.8821 30.5 19.2488C30.502 21.3691 29.7314 22.7192 27.8216 24.7772L26.8066 25.8638C25.7842 27.0028 25.3794 27.7252 25.3409 28.5793L25.3379 28.7411L25.3323 28.8689L25.3143 28.9932C25.2018 29.5636 24.7009 29.9957 24.0968 30.0001C23.4065 30.0049 22.8428 29.4493 22.8379 28.7589C22.8251 26.9703 23.5147 25.7467 25.1461 23.9739L26.1734 22.8762C27.5312 21.3837 28.0012 20.503 28 19.25C28 17.2634 26.2346 15.5 24.25 15.5C22.3307 15.5 20.6142 17.1536 20.5055 19.0587L20.4935 19.3778C20.4295 20.0081 19.8972 20.5 19.25 20.5C18.5596 20.5 18 19.9404 18 19.25C18 15.8846 20.8864 13 24.25 13Z</StreamGeometry>
+        <converters:HeaderPropertyConverter x:Key="HeaderPropConv"/>
+    </Window.Resources>
+
+    <Window.Styles>
+        <Style Selector="Button.circularIcon">
+            <Setter Property="Background" Value="{Binding ConstellationBlue}"/>
+            <Setter Property="CornerRadius" Value="25"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style Selector="Button.circularIcon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{Binding ConstellationDarkBlue}"/>
+            <Setter Property="TextBlock.Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Button.circularIcon:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{Binding ConstellationDarkBlue}"/>
+        </Style>
+
+        <Style Selector="TextBox.settingsBox">
+          <Setter Property="Background" Value="{DynamicResource TextControlBackground}" />
+        </Style>
+
+        <Style Selector="TextBox.settingsBox.Invalid">
+          <Setter Property="Background" Value="Maroon" />
+        </Style>
+
+    </Window.Styles>
+
+    <Grid ColumnDefinitions="5,4,3,*">
+        <Rectangle Fill="{Binding ConstellationRed}" Grid.Column="0" />
+        <Rectangle Fill="{Binding ConstellationOrange}" Grid.Column="1" />
+        <Rectangle Fill="{Binding ConstellationGold}" Grid.Column="2" />
+
+        <TabControl x:Name="tcPages" Grid.Column="3" SelectedIndex="{Binding SelectedTabIndex}">
+            <TabControl.Styles>
+                <Style Selector="TabControl">
+                    <Setter Property="ItemsPanel">
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="{Binding $parent[TabControl].Items.Count}" Background="{Binding ConstellationDarkBlue}"/>
+                        </ItemsPanelTemplate>
+                    </Setter>
+                </Style>
+
+                <Style Selector="TabItem">
+                    <Setter Property="HeaderTemplate">
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                <PathIcon Data="{Binding $parent[TabItem].Header, Converter={StaticResource HeaderPropConv}, ConverterParameter=IconPath}" Width="20" Height="20" Foreground="#F4F5F7"
+                                          IsVisible="{Binding $parent[TabItem].Header, Converter={StaticResource HeaderPropConv}, ConverterParameter=IconPath, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                <TextBlock Text="{Binding $parent[TabItem].Header, Converter={StaticResource HeaderPropConv}, ConverterParameter=HeaderText}" FontSize="18" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" TextDecorations="Underline" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </Setter>
+                    <Setter Property="Template">
+                        <ControlTemplate>
+                            <Border Background="{TemplateBinding Background}" Padding="8,4">
+                                <ContentPresenter Content="{TemplateBinding Header}" ContentTemplate="{TemplateBinding HeaderTemplate}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter>
+                </Style>
+
+                <Style Selector="TabItem:pointerover">
+                    <Setter Property="Background" Value="{Binding ConstellationLightBlue}"/>
+                </Style>
+
+                <Style Selector="TabItem:selected">
+                    <Setter Property="Background" Value="{Binding ConstellationBlue}"/>
+                    <Setter Property="HeaderTemplate">
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Center">
+                                <PathIcon Data="{Binding $parent[TabItem].Header, Converter={StaticResource HeaderPropConv}, ConverterParameter=IconPath}" Width="20" Height="20" Foreground="#F4F5F7"
+                                          IsVisible="{Binding $parent[TabItem].Header, Converter={StaticResource HeaderPropConv}, ConverterParameter=IconPath, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                                <TextBlock Text="{Binding $parent[TabItem].Header, Converter={StaticResource HeaderPropConv}, ConverterParameter=HeaderText}" FontSize="18" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </Setter>
+                </Style>
+            </TabControl.Styles>
+
+
+            <TabItem Header="{Binding CreateHeader}" Foreground="{Binding ConstellationWhite}" IsEnabled="{Binding NonSettingTabState}">
+                <ToolTip.Tip>
+                    <StackPanel>
+                        <TextBlock Text="Create a brand new weapon icon SWF file."/>
+                    </StackPanel>
+                </ToolTip.Tip>
+
+                <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="0,10,0,20">
+
+                    <Grid RowDefinitions="Auto,*" Grid.Row="0">
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="Weapon Linkage Name" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                            <Rectangle Fill="{Binding ConstellationGold}" Grid.Column="2" Height="2" />
+
+                            <Button Grid.Column="4" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            What is the LinkageName from your UI_Icon keyword that would want to use for this new icon file?
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,5,25,20">
+                            <TextBlock Text="Enter the keyword LinkageName value for your weapon" Foreground="{Binding ConstellationWhite}"/>
+					        <TextBox Text="{Binding WeaponLinkageName}" Margin="0,5,0,0" Foreground="{Binding ConstellationWhite}"/>
+                        </StackPanel>
+                
+
+                    </Grid>
+
+                    <Grid RowDefinitions="Auto,*" Grid.Row="1">
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="Output Directory" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                            <Rectangle Fill="{Binding ConstellationOrange}" Grid.Column="2" Height="2" />
+                            <Button Grid.Column="4" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            Where would you like your new weapon icon file saved?
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,5,25,20">
+                            <TextBlock Text="Choose where to save the new icon SWF file" Foreground="{Binding ConstellationWhite}"/>
+					        <Grid Grid.Row="2" ColumnDefinitions="*,10,Auto" RowDefinitions="*" Margin="0,5,0,0">
+			                    <TextBox Text="{Binding ExportPath, Mode=OneWay}" IsReadOnly="True" Foreground="{Binding ConstellationWhite}"/>
+                                <Button Grid.Column="2" Content="Browse" Click="OnBrowseFolderClick" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{Binding ConstellationGold}" Foreground="Black" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="0" ColumnDefinitions="Auto,5,*" Margin="0,5,0,0" IsVisible="{Binding IsValid}">
+                                <TextBlock Text="Output File:" Foreground="{Binding ConstellationWhite}"/>
+                                <TextBlock Grid.Column="2" Text="{Binding FinalFilePath}" Foreground="{Binding ConstellationWhite}" />
+                            </Grid>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Grid RowDefinitions="Auto,*,Auto" Grid.Row="2" >
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="Weapon Icon Import" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                            <Rectangle Fill="{Binding ConstellationRed}" Grid.Column="2" Height="2" />
+                            <Button Grid.Column="4" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            This is your icon file in an SVG format which you want to use for this weapon icon. <LineBreak />
+                                        </TextBlock>
+                                        <TextBlock Text="Important!" FontWeight="Bold"/>
+                                        <TextBlock Text="It MUST be a SVG file, you will need to use external tools to create this such as Adobe Illustrator, Affinitiy, or Inkscape."/>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+            
+                        <starfieldweaponiconfilebuilder:SvgDropZone x:Name="SvgDropControl" Grid.Row="1" DataContext="{Binding}" Margin="0,5,25,20"/>
+                        <Grid Grid.Row="2" ColumnDefinitions="*,10,Auto,Auto" RowDefinitions="*" Margin="0,-10,25,0">
+			                <TextBox Text="{Binding SvgPath, Mode=OneWay}" IsReadOnly="True" Foreground="{Binding ConstellationWhite}"/>
+                            <Button Grid.Column="2" Content="Browse" Tag="SvgPath" Click="OnBrowseFileClick" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{Binding ConstellationGold}" Foreground="Black" FontWeight="Bold"/>
+                            <Button Grid.Column="3" Content="Clear Icon" IsVisible="{Binding HasSvg}" Margin="10,0,0,0" Command="{Binding ResetSvgCommand}" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{Binding ConstellationRed}" Foreground="Black" FontWeight="Bold"/>
+                        </Grid>
+
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,Auto,10,Auto,*" Grid.Row="3" Margin="0,20,0,0">
+                        <Button Grid.Column="1" Content="{Binding CreateButtonText}" Click="CreateButton_Click" IsEnabled="{Binding IsValid}" FontSize="20" Padding="10" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="ForestGreen" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                        <Button Grid.Column="3" Content="Reset" Command="{Binding ResetCreateCommand}" IsEnabled="{Binding IsValid}" FontSize="20" Padding="10" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="DarkRed" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                    </Grid>
+
+                </Grid>
+
+            </TabItem>
+
+
+
+            <TabItem Header="{Binding CloneHeader}" Foreground="{Binding ConstellationWhite}" IsEnabled="{Binding NonSettingTabState}">
+                <ToolTip.Tip>
+                    <StackPanel>
+                        <TextBlock Text="Copy an existing weapon icon SWF and rename"/>
+                        <TextBlock Text="everything to a new linkage name with the same icon"/>
+                    </StackPanel>
+                </ToolTip.Tip>
+
+                <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="0,10,0,20">
+                
+                    <Grid RowDefinitions="Auto,*" Grid.Row="0">
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="New Weapon Linkage Name" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                            <Rectangle Fill="{Binding ConstellationGold}" Grid.Column="2" Height="2" />
+
+                            <Button Grid.Column="4" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            What is the LinkageName from your UI_Icon keyword that would want to use for this copied icon file?
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,5,25,20">
+                            <TextBlock Text="Enter the LinkageName that you would like the copied file to use" Foreground="{Binding ConstellationWhite}"/>
+					        <TextBox Text="{Binding CloneWeaponLinkageName}" Margin="0,5,0,0" Foreground="{Binding ConstellationWhite}"/>
+                        </StackPanel>
+                
+
+                    </Grid>
+
+                    <Grid RowDefinitions="Auto,*" Grid.Row="1">
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="Source File" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                            <Rectangle Fill="{Binding ConstellationOrange}" Grid.Column="2" Height="2" />
+                            <Button Grid.Column="4" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            Which weapon icon file do you want to copy and rename?
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,5,25,20">
+                            <TextBlock Text="Choose a SWF file to copy and rename" Foreground="{Binding ConstellationWhite}"/>
+					        <Grid Grid.Row="2" ColumnDefinitions="*,10,Auto" RowDefinitions="*" Margin="0,5,0,0">
+			                    <TextBox Text="{Binding CloneSourcePath, Mode=OneWay}" IsReadOnly="True" Foreground="{Binding ConstellationWhite}"/>
+                                <Button Grid.Column="2" Content="Browse" Tag="CloneSourcePath" Click="OnBrowseFileClick" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{Binding ConstellationGold}" Foreground="Black" FontWeight="Bold"/>
+                            </Grid>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Grid RowDefinitions="Auto,*" Grid.Row="2">
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="Output Directory" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                            <Rectangle Fill="{Binding ConstellationRed}" Grid.Column="2" Height="2" />
+
+                            <Button Grid.Column="5" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            Where do you want the new Weapon Icon File to be saved?
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,5,25,20">
+                            <TextBlock Text="Choose where to save the copied SWF file" Foreground="{Binding ConstellationWhite}"/>
+					        <Grid Grid.Row="2" ColumnDefinitions="*,10,Auto" RowDefinitions="*" Margin="0,5,0,0">
+			                    <TextBox Text="{Binding CloneExportPath, Mode=OneWay}" IsReadOnly="True" Foreground="{Binding ConstellationWhite}"/>
+                                <Button Grid.Column="2" Content="Browse" Tag="CloneExportPath" Click="OnBrowseFolderClick" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{Binding ConstellationGold}" Foreground="Black" FontWeight="Bold"/>
+                            </Grid>
+                            <Grid Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="0" ColumnDefinitions="Auto,5,*" Margin="0,5,0,0" IsVisible="{Binding IsCloneValid}">
+                                <TextBlock Text="Output File:" Foreground="{Binding ConstellationWhite}"/>
+                                <TextBlock Grid.Column="2" Text="{Binding CloneFinalFilePath}" Foreground="{Binding ConstellationWhite}" />
+                            </Grid>
+                        </StackPanel>
+
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,Auto,10,Auto,*" Grid.Row="3" Margin="0,20,0,0">
+                        <Button Grid.Column="1" Content="{Binding CloneCreateButtonText}" Click="CloneCreateButton_Click" IsEnabled="{Binding IsCloneValid}" FontSize="20" Padding="10" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="ForestGreen" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                        <Button Grid.Column="3" Content="Reset" Command="{Binding ResetCLoneCommand}" IsEnabled="{Binding IsCloneValid}" FontSize="20" Padding="10" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="DarkRed" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                    </Grid>
+                
+                
+                </Grid>
+
+            </TabItem>
+
+
+
+            <TabItem Header="{Binding SettingsHeader}" Foreground="{Binding ConstellationWhite}">
+                <ToolTip.Tip>
+                    <TextBlock Text="Application settings"/>
+                </ToolTip.Tip>
+
+                <Grid RowDefinitions="Auto,Auto,*,Auto" Margin="0,10,0,20">
+
+                    <Grid RowDefinitions="Auto,*" Grid.Row="0" Margin="0,0,0,5">
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="Java Install Path" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                            <Rectangle Fill="{Binding ConstellationGold}" Grid.Column="2" Height="2" />
+                            <Button Grid.Column="4" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock Text="Important" FontWeight="Bold"/>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            The minimum required version of Java is v8.0, older versions will not work and may cause errors when trying to create icons
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,10,25,20">
+                            <TextBlock Text="Choose where Java is installed (in most cases it is correctly autodetected)" Foreground="{Binding ConstellationWhite}"  TextWrapping="WrapWithOverflow"/>
+					        <Grid Grid.Row="2" ColumnDefinitions="*,10,Auto" RowDefinitions="*" Margin="0,5,0,0">
+			                    <TextBox x:Name="tbJavaPath" Classes="settingsBox" Classes.Invalid="{Binding JavaPathInvalid}" Text="{Binding AppSettings.JavaPath, Mode=OneWay}" IsReadOnly="True" Foreground="{Binding ConstellationWhite}"/>
+                                <Button Grid.Column="2" Content="Browse" Tag="JavaPath" Click="OnBrowseFileClick" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{Binding ConstellationGold}" Foreground="Black" FontWeight="Bold"/>
+                            </Grid>
+                        </StackPanel>
+
+                    </Grid>
+
+
+                    <Grid RowDefinitions="Auto,*" Grid.Row="1" Margin="0,0,0,5">
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="FFDec Path" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold" />
+                            <Rectangle Fill="{Binding ConstellationOrange}" Grid.Column="2" Height="2" />
+
+                            <Button Grid.Column="4" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            This comes bundled with the app when you downloaded it so it should already exist
+                                            <LineBreak/>
+                                            <LineBreak/>
+                                            <Bold>Important</Bold>
+                                            <LineBreak/>
+                                            The minimum required version of FFDec is v25.1.3 nightly build 3471, older versions will not work and may cause errors when trying to create icons
+                                            <LineBreak/>
+                                            <LineBreak/>
+                                            %AppPath% = Directory where this app is located.
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,10,25,20">
+                            <TextBlock Foreground="{Binding ConstellationWhite}" TextWrapping="WrapWithOverflow">
+                                Choose where the 'ffdec-cli.jar' file is located
+                            </TextBlock>
+					        <Grid Grid.Row="2" ColumnDefinitions="*,10,Auto" RowDefinitions="*" Margin="0,5,0,0">
+			                    <TextBox x:Name="tbFfdecPath" Classes="settingsBox" Classes.Invalid="{Binding FfdecPathInvalid}" Text="{Binding AppSettings.FfdecPath, Mode=OneWay}" IsReadOnly="True" Foreground="{Binding ConstellationWhite}"/>
+                                <Button Grid.Column="2" Content="Browse" Tag="FfdecPath" Click="OnBrowseFileClick" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{Binding ConstellationGold}" Foreground="Black" FontWeight="Bold"/>
+                            </Grid>
+                        </StackPanel>
+
+                    </Grid>
+
+
+                    <Grid RowDefinitions="Auto,*" Grid.Row="2" Margin="0,0,0,5">
+
+                        <Grid ColumnDefinitions="Auto,5,*,5,Auto">
+                            <TextBlock Text="Weapon Icon Template" FontSize="18" Foreground="{Binding ConstellationWhite}" FontWeight="Bold" />
+                            <Rectangle Fill="{Binding ConstellationRed}" Grid.Column="2" Height="2" />
+                            <Button Grid.Column="4" Width="21" Height="21" CornerRadius="25" Classes="circularIcon" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            This comes bundled with the app when you downloaded it so it should already exist.
+                                            <LineBreak/>
+                                            <LineBreak/>
+                                            The other settings are specific to the icon template and should not be changed unless there was a major template change.
+                                            <LineBreak/>
+                                            <LineBreak/>
+                                            %AppPath% = Directory where this app is located.
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+
+                                <Button.Content>
+							        <PathIcon Data="{StaticResource question_circle_regular}" Foreground="{Binding ConstellationWhite}" Width="20" Height="20" />
+                                </Button.Content>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,10,25,20">
+
+                            <Grid RowDefinitions="Auto,Auto">
+								<TextBlock Grid.Row="0" Text="Template Path:" FontWeight="Bold" Foreground="{Binding ConstellationWhite}"/>
+                                <StackPanel Grid.Row="1" Orientation="Vertical">
+									<TextBlock Foreground="{Binding ConstellationWhite}" TextWrapping="WrapWithOverflow">
+                                        Choose where the 'CCSUP_CustomWeaponTemplate.swf' file is located
+                                    </TextBlock>
+					                <Grid ColumnDefinitions="*,10,Auto" RowDefinitions="*" Margin="0,5,0,0">
+			                            <TextBox x:Name="tbWeaponIconTemplatePath" Classes="settingsBox" Classes.Invalid="{Binding WeaponIconTemplateInvalid}" Text="{Binding AppSettings.WeaponIconTemplatePath, Mode=OneWay}" IsReadOnly="False" Foreground="{Binding ConstellationWhite}"/>
+                                        <Button Grid.Column="2" Content="Browse" Tag="WeaponIconTemplatePath" Click="OnBrowseFileClick" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="{Binding ConstellationGold}" Foreground="Black" FontWeight="Bold"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid RowDefinitions="Auto,Auto" Margin="0,10,0,0">
+								<TextBlock Grid.Row="0" Text="Template Class Name:" FontWeight="Bold" Foreground="{Binding ConstellationWhite}"/>
+                                <TextBox Grid.Row="1" Text="{Binding AppSettings.TemplateClassName, Mode=TwoWay}" Foreground="{Binding ConstellationWhite}"/>
+                            </Grid>
+
+                            <Grid RowDefinitions="Auto,Auto" Margin="0,10,0,0">
+								<TextBlock Grid.Row="0" Text="Template Prefix:" FontWeight="Bold" Foreground="{Binding ConstellationWhite}"/>
+                                <TextBox Grid.Row="1" Text="{Binding AppSettings.TemplatePrefix, Mode=TwoWay}" Foreground="{Binding ConstellationWhite}"/>
+                            </Grid>
+
+                            <Grid RowDefinitions="Auto,Auto" Margin="0,10,0,0">
+								<TextBlock Grid.Row="0" Text="Additional Template options:" FontWeight="Bold" Foreground="{Binding ConstellationWhite}"/>
+                                <ToggleSwitch Grid.Row="1" IsChecked="{Binding AppSettings.AutoResizeIcon, Mode=TwoWay}" OnContent="Enable icon auto sizing and positioning in SWF file (Default)" OffContent="Disable icon auto-sizing and positioning in SWF file (Not recommended)">
+                                    <ToolTip.Tip>
+                                    <StackPanel>
+                                        <TextBlock Text="Important:" FontWeight="Bold"/>
+                                        <TextBlock TextWrapping="WrapWithOverflow">
+                                            This will toggle the built in auto-sizing and positioning features of the icon template. Doing so will mean you have to manually size and position your icon within the created SWF file using FFDec before you will be able to use the file in your mod.
+                                            <LineBreak/>
+                                            <LineBreak/>
+                                            <Bold>It is recommended to keep this enabled</Bold>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip.Tip>
+                                </ToggleSwitch>
+                            </Grid>
+
+                            
+                            
+                        </StackPanel>
+
+                    </Grid>
+
+
+                    <Grid ColumnDefinitions="*,Auto,*" Grid.Row="3" Margin="0,10,0,0">
+                        <Button Grid.Column="1" Content="Reset to defaults" Command="{Binding ResetSettingsCommand}" FontSize="20" Padding="10" VerticalAlignment="Stretch" VerticalContentAlignment="Center" Background="DarkRed" Foreground="{Binding ConstellationWhite}" FontWeight="Bold"/>
+                    </Grid>
+
+                </Grid>
+
+            </TabItem>
+
+        </TabControl>
+
+        
+
+        
+
+        <Grid Name="LoadingOverlay" Grid.Column="0" Grid.ColumnSpan="4">
+			<Border Background="Black" Opacity="0.5" IsVisible="True" />
+            <Border Background="{Binding ConstellationBlue}" Margin="75,150" >
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.5" OffsetX="5" OffsetY="5"/>
+                </Border.Effect>
+                <Grid ColumnDefinitions="5,4,3,*">
+                    <Rectangle Fill="{Binding ConstellationRed}" Grid.Column="0" />
+                    <Rectangle Fill="{Binding ConstellationOrange}" Grid.Column="1" />
+                    <Rectangle Fill="{Binding ConstellationGold}" Grid.Column="2" />
+                    <Border Grid.Column="3" BorderThickness="0,1,1,1" BorderBrush="{Binding ConstellationWhite}">
+						<Grid RowDefinitions="auto,auto" VerticalAlignment="Center">
+				        <StackPanel Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                            <LoadingIndicator IsActive="True" Mode="ArcGrow" SpeedRatio="1.5" Thickness="4" Foreground="White" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding LoadingTitle}" HorizontalAlignment="Center" FontSize="22" Foreground="{Binding ConstellationWhite}"/>
+                        </StackPanel>
+                        <TextBlock Grid.Row="1" Text="{Binding LoadingMessage}" HorizontalAlignment="Center" FontSize="18" Foreground="{Binding ConstellationWhite}" VerticalAlignment="Center" Margin="0,10,0,20"/>
+                    </Grid>
+                    </Border>
+					
+                </Grid>
+				
+            </Border>
+        </Grid>
+
+
+
+        
+
+    </Grid>
+
+    
+
+</Window>
