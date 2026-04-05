@@ -2,6 +2,7 @@
 using StarfieldWeaponIconFileBuilder.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -45,7 +46,7 @@ public partial class AppConfig
             Logging.AppName = ThisAssembly.GetName().Name;
             var version = ThisAssembly.GetName().Version;
             Logging.AppVersionString = !version.IsNullOrEmpty() ? version.ToString() : "0.0.0.0";
-            LocalPath = ThisAssembly.Location.GetDirectoryName();
+            LocalPath = GetThisAppPath(ThisAssembly);
             InternalEnvVariables.TryAdd("%AppPath%", LocalPath ?? string.Empty);
         }
         ApplicationParameters = GetApplicationParams(CommandLineArgs);
@@ -98,6 +99,34 @@ public partial class AppConfig
     #endregion
 
     #region Methods
+
+    /// <summary>
+    /// Gets the currently executing directory with fallbacks to work with single-run embedded environment
+    /// </summary>
+    /// <param name="ThisAssembly"></param>
+    /// <returns></returns>
+    public static string GetThisAppPath(Assembly? ThisAssembly)
+    {
+        if (!Environment.ProcessPath.IsNullOrEmptyOrWhiteSpace())
+        {
+            return Environment.ProcessPath.GetDirectoryName()!;
+        }
+
+        using (Process process = Process.GetCurrentProcess())
+        {
+            if (!process.MainModule.IsNullOrEmpty())
+                return process.MainModule.FileName.GetDirectoryName()!;
+        }
+
+        ThisAssembly ??= Assembly.GetExecutingAssembly() ?? Assembly.GetCallingAssembly();
+        string? assemblyLocation = ThisAssembly.Location;
+        if (!assemblyLocation.IsNullOrEmptyOrWhiteSpace())
+        {
+            return assemblyLocation.GetDirectoryName()!;
+        }
+
+        return AppContext.BaseDirectory;
+    }
 
     /// <summary>
     /// Cache application command line and parameters into internal object
