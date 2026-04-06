@@ -1,5 +1,8 @@
-# StarfieldWeaponIconFileBuilder
+# Starfield Weapon Icon File Builder
 Utility and resources to create/clone Starfield Custom Weapon Icon SWF files
+
+[![Build and Release](https://github.com/ProfX66/StarfieldWeaponIconFileBuilder/actions/workflows/release.yml/badge.svg?event=push)](https://github.com/ProfX66/StarfieldWeaponIconFileBuilder/actions/workflows/release.yml)
+![Latest Release](https://img.shields.io/github/v/release/ProfX66/StarfieldWeaponIconFileBuilder)
 
 ---
 
@@ -14,15 +17,11 @@ Contributions are welcome! To submit a Pull Request:
 
 **Important:** By submitting a PR, you agree to license your contributions under the same GPL v3 license as this project.
 
----
-
 ## Project Name and Logo
 
 The name `StarfieldWeaponIconFileBuilder` and its logo are **not covered under the GPL license**.
 You may fork and modify the code, but you **may not use the same project name or logo** for redistributed versions without permission.
 Please choose a new name for forks or modified versions.
-
----
 
 ## Third-Party Dependencies
 
