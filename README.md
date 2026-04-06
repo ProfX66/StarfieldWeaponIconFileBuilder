@@ -1,10 +1,39 @@
-# Starfield Weapon Icon File Builder
-Utility and resources to create/clone Starfield Custom Weapon Icon SWF files
+![Starfield Weapon Icon File Builder](https://pxcnet.xyz/Starfield/images/StarfieldWeaponIconFileBuilderBanner.png)
+
+## About
+Custom built multi-platform GUI application which aids Starfield mod authors in creating custom weapon icon SWF files for their mods. It automates the entire process so you do not need to manually use JPEXS FFDec anymore.
+
+This tool exists because I was able to add code and automation inside the [Custom Weapon Icon Template](https://www.nexusmods.com/starfield/mods/13816) which auto scales and positions your weapon icon. The latest version of that template is bundled with this application, as well as a specific version of FFDec which properly imports SVG files and updates their bounds.
+
+All you have to do is download the latest release and unpack it somewhere on your computer and then run it, fill out your weapons details, load a SVG icon and click generate. You will now have a specialized "CCSUP_" SWF file that is ready to be dropped into your BA2 archive.
+
+> **Note**: You will still need to setup your UI_Icon keywords in your mod for it to work correctly.
 
 [![Build and Release](https://github.com/ProfX66/StarfieldWeaponIconFileBuilder/actions/workflows/release.yml/badge.svg?event=push)](https://github.com/ProfX66/StarfieldWeaponIconFileBuilder/actions/workflows/release.yml)
 ![Latest Release](https://img.shields.io/github/v/release/ProfX66/StarfieldWeaponIconFileBuilder)
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+## Creating a new Weapon Icon File
+Below is an example GIF which shows the "Create New" process.
+
+> Check out the documentation for more information
+
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://example.com/docs)
+
+![Create New Process](https://pxcnet.xyz/Starfield/images/StarfieldWeaponIconFileBuilder-Create.gif)
+
+## Copying and Renaming an existing Weapon Icon File
+Below is an example GIF which shows the "Copy & Rename" process.
+
+> Check out the documentation for more information
+
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://example.com/docs)
+
+![Copy & Rename Process](https://pxcnet.xyz/Starfield/images/StarfieldWeaponIconFileBuilder-Clone.gif)
+
 
 ---
+
 
 ## Contributing
 
