@@ -16,6 +16,11 @@ All you have to do is download the latest release and unpack it somewhere on you
 
 > **Note**: You will still need to setup your UI_Icon keywords in your mod for it to work correctly.
 
+### Required Dependencies
+- Java 8 or newer
+- FFDec v25.1.3 nightly build 3471 or newer _(this is included in the download)_
+- .NET 9.0 _(this is embedded with the application)_
+
 ## Creating a new Weapon Icon File
 Below is an example GIF which shows the "Create New" process.
 
@@ -23,7 +28,7 @@ Below is an example GIF which shows the "Create New" process.
 
 [![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://example.com/docs)
 
-![Create New Process](https://pxcnet.xyz/Starfield/images/StarfieldWeaponIconFileBuilder-Create.gif)
+![Create New Process](https://pxcnet.xyz/Starfield/Resources/images/StarfieldWeaponIconFileBuilder-Create.gif)
 
 ## Copying and Renaming an existing Weapon Icon File
 Below is an example GIF which shows the "Copy & Rename" process.
@@ -32,7 +37,7 @@ Below is an example GIF which shows the "Copy & Rename" process.
 
 [![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://example.com/docs)
 
-![Copy & Rename Process](https://pxcnet.xyz/Starfield/images/StarfieldWeaponIconFileBuilder-Clone.gif)
+![Copy & Rename Process](https://pxcnet.xyz/Starfield/Resources/images/StarfieldWeaponIconFileBuilder-Clone.gif)
 
 
 ---
