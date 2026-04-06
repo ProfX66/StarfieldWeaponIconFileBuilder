@@ -361,7 +361,7 @@ namespace StarfieldWeaponIconFileBuilder.Views
 
             if (Environment.IsPrivilegedProcess && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                MessageBoxResult msgResult = await Message.Show("This application was launched as elevated administrator. Drag and dropping for your icon likely will not function. You will need to use the browse button instead.\n\nWould you like to continue?", "Running as Administrator", MessageBoxIcon.Warning, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2);
+                MessageBoxResult msgResult = await Message.Show("This application was launched as elevated administrator.\n\nDrag and dropping for your icon likely will not function.\nYou will need to use the browse button instead.\n\nWould you like to continue?", "Running as Administrator", MessageBoxIcon.Warning, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2);
                 if (msgResult != MessageBoxResult.Yes) CloseApp();
             }
 
