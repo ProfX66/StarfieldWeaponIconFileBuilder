@@ -101,6 +101,7 @@ jobs:
       with:
         name: release-${{ matrix.rid }}
         path: publish/StarfieldWeaponIconFileBuilder-${{ matrix.rid }}-${{ steps.determine-version.outputs.version }}.zip
+        retention-days: 5
 
   release:
     needs: build-and-release
