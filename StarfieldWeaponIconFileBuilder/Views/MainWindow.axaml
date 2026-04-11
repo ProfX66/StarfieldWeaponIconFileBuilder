@@ -380,7 +380,7 @@
                                             <LineBreak/>
                                             <Bold>Important</Bold>
                                             <LineBreak/>
-                                            The minimum required version of FFDec is v25.1.3 nightly build 3471, older versions will not work and may cause errors when trying to create icons
+                                            The minimum required version of FFDec is v26.0.0, older versions will not work and may cause errors when trying to create icons
                                             <LineBreak/>
                                             <LineBreak/>
                                             %AppPath% = Directory where this app is located.
