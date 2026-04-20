@@ -16,26 +16,28 @@ All you have to do is download the latest release and unpack it somewhere on you
 
 > **Note**: You will still need to setup your UI_Icon keywords in your mod for it to work correctly.
 
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://pxcnet.xyz/Starfield/Resources/Custom%20Weapon%20Icons/StarfieldWeaponIconFileBuilder/)
+
 ### Required Dependencies
 - Java 8 or newer
-- FFDec v25.1.3 nightly build 3471 or newer _(this is included in the download)_
+- FFDec v26.0.0 or newer _(this is included in the download)_
 - .NET 9.0 _(this is embedded with the application)_
 
 ## Creating a new Weapon Icon File
 Below is an example GIF which shows the "Create New" process.
 
-> Check out the documentation for more information
+> Check out the [documentation](https://pxcnet.xyz/Starfield/Resources/Custom%20Weapon%20Icons/StarfieldWeaponIconFileBuilder/#creating-a-new-weapon-icon-file) for more information
 
-[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://example.com/docs)
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://pxcnet.xyz/Starfield/Resources/Custom%20Weapon%20Icons/StarfieldWeaponIconFileBuilder/#creating-a-new-weapon-icon-file)
 
 ![Create New Process](https://pxcnet.xyz/Starfield/Resources/images/StarfieldWeaponIconFileBuilder-Create.gif)
 
 ## Copying and Renaming an existing Weapon Icon File
 Below is an example GIF which shows the "Copy & Rename" process.
 
-> Check out the documentation for more information
+> Check out the [documentation](https://pxcnet.xyz/Starfield/Resources/Custom%20Weapon%20Icons/StarfieldWeaponIconFileBuilder/#copying-and-renaming-an-existing-weapon-icon-file) for more information
 
-[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://example.com/docs)
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=read-the-docs)](https://pxcnet.xyz/Starfield/Resources/Custom%20Weapon%20Icons/StarfieldWeaponIconFileBuilder/#copying-and-renaming-an-existing-weapon-icon-file)
 
 ![Copy & Rename Process](https://pxcnet.xyz/Starfield/Resources/images/StarfieldWeaponIconFileBuilder-Clone.gif)
 
@@ -94,7 +96,7 @@ This project uses the following third-party software:
    - License: MIT
 
 8. **[JPEXS Free Flash Decompiler (FFDec)](https://github.com/jindrapetrik/jpexs-decompiler)**
-   - Version: v25.1.3 nightly build 3471
+   - Version: v26.0.0
    - License: GNU General Public License v3 (GPL v3)
    - Copyright (C) JPEXS
    - Notes: FFDec binaries are included unmodified. A copy of the GPL v3 license is included in the `FFDec/` folder.
