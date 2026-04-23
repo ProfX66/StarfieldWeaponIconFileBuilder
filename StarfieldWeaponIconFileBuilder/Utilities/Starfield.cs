@@ -50,12 +50,13 @@ public static class Starfield
             return null;
         }
 
-        string tempFileName = TemplatePath!.GetFileName().RegexReplace(TemplateClassName!.RegexEscape(), Name);
-        if (!tempFileName.IsRegexMatch($"^{FilePrefix!.RegexEscape()}"))
+        string prefixPattern = $"^{FilePrefix!.RegexEscape()}_?";
+        if (Name.IsRegexMatch(prefixPattern))
         {
-            Name = $"{FilePrefix}_{Name}";
+            Name = Name.RegexReplace(prefixPattern, "");
         }
 
+        string tempFileName = TemplatePath!.GetFileName().RegexReplace(TemplateClassName!.RegexEscape(), Name);
         Logging.Informational($"Creating new Starfield Weapon icon file [ {tempFileName} ] in: {Destination}");
         Dictionary<string, string> replacements = new()
         {
