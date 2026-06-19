@@ -1,5 +1,6 @@
 ﻿using StarfieldWeaponIconFileBuilder.Extensions;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -7,6 +8,22 @@ namespace StarfieldWeaponIconFileBuilder.Utilities;
 
 public static partial class FileSystem
 {
+    #region Properties
+
+    public static readonly Dictionary<string, string> PlatformVariables = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["%LOCALAPPDATA%"] = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData, Environment.SpecialFolderOption.DoNotVerify),
+        ["%APPDATA%"] = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.DoNotVerify),
+        ["%USERPROFILE%"] = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify),
+        ["%DESKTOP%"] = Environment.GetFolderPath(Environment.SpecialFolder.Desktop, Environment.SpecialFolderOption.DoNotVerify),
+        ["%DOCUMENTS%"] = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments, Environment.SpecialFolderOption.DoNotVerify),
+        ["$HOME"] = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify),
+        ["${HOME}"] = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify),
+        ["%TEMP%"] = Path.GetTempPath()
+    };
+
+    #endregion
+
     #region Native Imports
 
     /// <summary>

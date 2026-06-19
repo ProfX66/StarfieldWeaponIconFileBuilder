@@ -267,13 +267,21 @@ public static class StringExtensions
     /// <returns>Expanded String</returns>
     public static string? ExpandVariables(this string Item, Dictionary<string, string>? Substitutions = null)
     {
-        if (Item.IsNullOrEmpty()) return Item;
-        string stReturn = Environment.ExpandEnvironmentVariables(Item);
+        if (Item.IsNullOrEmptyOrWhiteSpace()) return Item;
+
+        string stReturn = Item;
+        foreach (KeyValuePair<string, string> item in FileSystem.PlatformVariables)
+        {
+            if (!item.Value.IsNullOrEmptyOrWhiteSpace())
+                stReturn = stReturn.Replace(item.Key, item.Value, StringComparison.OrdinalIgnoreCase);
+        }
+
+        stReturn = Environment.ExpandEnvironmentVariables(stReturn);
         if (!Substitutions.IsNullOrEmpty())
         {
             foreach (KeyValuePair<string, string> item in Substitutions)
             {
-                stReturn = stReturn.Replace(item.Key, item.Value);
+                stReturn = stReturn.Replace(item.Key, item.Value, StringComparison.OrdinalIgnoreCase);
             }
         }
 
@@ -281,11 +289,11 @@ public static class StringExtensions
         {
             foreach (KeyValuePair<string, string> item in AppConfig.InternalEnvVariables)
             {
-                stReturn = stReturn.Replace(item.Key, item.Value);
+                stReturn = stReturn.Replace(item.Key, item.Value, StringComparison.OrdinalIgnoreCase);
             }
         }
 
-        return stReturn;
+        return stReturn.NormalizePath();
     }
 
     /// <summary>

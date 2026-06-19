@@ -27,7 +27,20 @@ public static class FileSystemExtensions
     {
         if (InputPath.IsRegexMatch(@"^%") || !InputPath.IsRegexMatch(@"\\\.\.\\")) return InputPath;
         string ReplacePattern = $@"{Environment.CurrentDirectory.RegexEscape()}\\?";
-        return Path.GetFullPath(InputPath).RegexReplace(ReplacePattern, "");
+        return Path.GetFullPath(InputPath).RegexReplace(ReplacePattern, "").NormalizePath();
+    }
+
+    /// <summary>
+    /// Normalizes the slashes in the passed path
+    /// </summary>
+    /// <param name="InputPath"></param>
+    /// <returns></returns>
+    public static string NormalizePath(this string InputPath)
+    {
+        if (InputPath.IsNullOrEmptyOrWhiteSpace()) return InputPath;
+        char separator = Path.DirectorySeparatorChar;
+        char alternate = separator == '/' ? '\\' : '/';
+        return InputPath.Replace(alternate, separator);
     }
 
     /// <summary>
@@ -289,7 +302,16 @@ public static class FileSystemExtensions
     {
         Executable = Executable!.ExpandVariables(Substitutions);
         if (Executable.IsNullOrEmptyOrWhiteSpace()) return null;
+        if (!OperatingSystem.IsWindows())
+        {
+            string extension = Executable.GetFileExtension();
+            if (extension.Equals(".exe", StringComparison.OrdinalIgnoreCase) || extension.Equals(".bat", StringComparison.OrdinalIgnoreCase) || extension.Equals(".cmd", StringComparison.OrdinalIgnoreCase))
+            {
+                Executable = Executable.GetFileNameWithoutExtension();
+            }
+        }
 
+        Logging.Verbose($"[FindExecutable] Looking for executable: {Executable}");
         if (Path.IsPathFullyQualified(Executable!))
         {
             if (Executable.PathExists().Exist)
@@ -298,17 +320,18 @@ public static class FileSystemExtensions
                 return null;
         }
 
-        char Separator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ';' : ':';
+        char Separator = Path.PathSeparator;
         string[] Paths = (Environment.GetEnvironmentVariable("PATH") ?? "").Split(Separator);
-
         foreach (string FoundPath in Paths)
         {
             string TrimmedPath = FoundPath.Trim();
             if (TrimmedPath.IsNullOrEmptyOrWhiteSpace()) continue;
             string FullPath = TrimmedPath.AppendPath(Executable!);
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
+                Logging.Verbose($"[FindExecutable::Windows] Path: {FullPath}");
+
                 if (Path.HasExtension(FullPath))
                 {
                     if (FullPath.PathExists().Exist)
@@ -327,12 +350,48 @@ public static class FileSystemExtensions
             }
             else
             {
+                Logging.Verbose($"[FindExecutable] Path: {FullPath}");
                 if (FullPath.PathExists().Exist && (new FileInfo(FullPath).Attributes & FileAttributes.Directory) == 0)
-                    return new FileInfo(Path.GetFullPath(FullPath));
+                {
+                    return new FileInfo(FullPath);
+                }
+                else
+                {
+                    string? caseinsens = FullPath.FindFileIgnoreCase();
+                    if (!caseinsens.IsNullOrEmpty())
+                        return new FileInfo(caseinsens);
+                }
             }
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Iterates over the directory for the passed path to find matching files while ignoring case
+    /// </summary>
+    /// <param name="InputPath"></param>
+    /// <returns></returns>
+    public static string? FindFileIgnoreCase(this string InputPath)
+    {
+        string? directory = InputPath.GetDirectoryName();
+        string? fileName = InputPath.GetFileName();
+        if (directory.IsNullOrEmptyOrWhiteSpace() || fileName.IsNullOrEmptyOrWhiteSpace() || !directory.PathExists().Exist)
+        {
+            return null;
+        }
+
+        string? ret = null;
+        try
+        {
+            ret = Directory.EnumerateFileSystemEntries(directory).FirstOrDefault(x => string.Equals(Path.GetFileName(x), fileName, StringComparison.OrdinalIgnoreCase));
+        }
+        catch (Exception Ex)
+        {
+            Message.ShowError($"Unable to find file: {InputPath}", exception: Ex).Wait();
+        }
+
+        return ret;
     }
 
     /// <summary>
